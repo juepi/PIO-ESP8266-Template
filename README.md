@@ -8,7 +8,7 @@ Additionally, personal settings like WIFI SSID and Passphrase will be talken fro
 ## Hardware Requirements
 To be able to use DEEP_SLEEP functionality, you will most probably need a small hardware modification for you ESP board: connect pin D0 to RST pin. This will allow the ESP to wake up after the defined sleep time as defined in the include/generic-config.h file.  
 
-# Configurarion
+## Configurarion
 In addition to the platformio.ini file, see header files in the include/ folder for additional settings.  
 The mqtt-ota-config.h is of special importance, as it will allow you to adopt the MQTT topics for your needs.  
 
