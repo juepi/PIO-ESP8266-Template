@@ -35,6 +35,10 @@ The ESP will publish OTA status strings here. No need to pre-create this topic.
 The sketch will publish the voltage measured on the 3.3V supply here. Note that the accuracy is quite low, but it is good enough to detect if the battery is running low when you supply the ESP in example by a LiFePo4 accumulator directly on the 3.3V pin.  
 If you want to improve accuracy, measure the actual voltage with a multimeter and adopt the `VCCCORRDIV` in the `hardware-setup.h` file.
 
+## Importance of `ClientName` Setting
+Note that the `ClientName` configured in the `platformio.ini` file will also be used as the hostname reported to your DHCP server when the ESP fetches an IP-address. This is especially important, as OTA-flashing will also require your networking environment to be able to resolve this hostname to the ESP's IP-address!  
+See `upload_port`setting in the `platformio.ini` file. If you're having troubles with OTA-flashing, you might want to check that first by pinging the confgured `ClientName`.
+
 ## Compiling and flashing walkthrough
 I will give a rough walkthrough on the first steps, assuming you have a working PlatformIO environment:
 
