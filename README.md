@@ -21,17 +21,17 @@ I've made the experience that it can take quite a while after subscribing to a M
 ## MQTT Topics used
 In order to run OTA updates, you will need at least the following MQTT topics on your broker (case sensitive) to be pre-created so ESP can subscribe to them:
 
-* `topic/tree/OTAupdate` - default retained Value: **off**
+* `topic/tree/OTAupdate` - default retained Value: **off**  
 This will be translated to a bool variable in the sketch. You will need to set the topic value either to "on" or "off". During normal operation, this Topic needs to be set to "off". If you want to run an OTA-update on your ESP, set it to "on" (retained).  
 After a successful update, the ESP will reset this flag to "off".
 
-* `topic/tree/OTAinProgress` - default retained Value: **off**
+* `topic/tree/OTAinProgress` - default retained Value: **off**  
 This is a helper flag topic required by the ESP.
 
-* `topic/tree/OTAstatus` - default Value: none
+* `topic/tree/OTAstatus` - default Value: none  
 The ESP will publish OTA status strings here. No need to pre-create this topic.
 
-* `topic/tree/Vcc` - default Value: none
+* `topic/tree/Vcc` - default Value: none  
 The sketch will publish the voltage measured on the 3.3V supply here. Note that the accuracy is quite low, but it is good enough to detect if the battery is running low when you supply the ESP in example by a LiFePo4 accumulator directly on the 3.3V pin.  
 If you want to improve accuracy, measure the actual voltage with a multimeter and adopt the `VCCCORRDIV` in the `hardware-setup.h` file.
 
@@ -53,7 +53,7 @@ Deactivate OTA-flashing in the board specific area:
 * Adopt board info and hardware settings in `include/hardware-config.h` if needed
 * Compile and flash
 
-To re-flash the sketch over OTA:
+**To re-flash the sketch over OTA:**
 * Prepare `platformio.ini` for OTA flashing
 Activate OTA-flashing in the board specific area:
 ```
