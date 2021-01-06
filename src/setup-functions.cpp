@@ -10,6 +10,9 @@ void wifi_setup()
     // Set WiFi Sleep Mode
     WiFi.setSleepMode(WIFISLEEP);
 
+    // Set WiFi Hostname
+    WiFi.hostname(WIFI_DHCPNAME);
+
     // Connect to WiFi network
     DEBUG_PRINTLN();
     DEBUG_PRINTLN("Connecting to " + String(ssid));

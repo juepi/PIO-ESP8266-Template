@@ -38,6 +38,27 @@ WiFiClient WIFI_CLTNAME;
 // Setup PubSub Client instance
 PubSubClient mqttClt(MQTT_BROKER, 1883, MqttCallback, WIFI_CLTNAME);
 
+/*
+/ Functions
+*/
+
+// Function to subscribe to MQTT topics
+bool MqttSubscribe(const char *Topic)
+{
+  if (mqttClt.subscribe(Topic))
+  {
+    DEBUG_PRINTLN("Subscribed to " + String(Topic));
+    mqttClt.loop();
+    return true;
+  }
+  else
+  {
+    DEBUG_PRINTLN("Failed to subscribe to " + String(Topic));
+    delay(100);
+    return false;
+  }
+}
+
 // Function to connect to MQTT Broker and subscribe to Topics
 bool ConnectToBroker()
 {
@@ -55,26 +76,8 @@ bool ConnectToBroker()
 
 // Subscribe to Topics
 #ifdef OTA_UPDATE
-      if (mqttClt.subscribe(ota_topic))
-      {
-        DEBUG_PRINTLN("Subscribed to " + String(ota_topic));
-        delay(1);
-      }
-      else
-      {
-        DEBUG_PRINTLN("Failed to subscribe to " + String(ota_topic));
-        delay(100);
-      }
-      if (mqttClt.subscribe(otaInProgress_topic))
-      {
-        DEBUG_PRINTLN("Subscribed to " + String(otaInProgress_topic));
-        delay(1);
-      }
-      else
-      {
-        DEBUG_PRINTLN("Failed to subscribe to " + String(otaInProgress_topic));
-        delay(100);
-      }
+      MqttSubscribe(ota_topic);
+      MqttSubscribe(otaInProgress_topic);
 #endif //OTA_UPDATE
       delay(200);
       break;
@@ -125,10 +128,9 @@ void setup()
   }
   else
   {
-    DEBUG_PRINTLN("3 connection attempts to broker failed, using default values..");
-    DEBUG_PRINTLN("");
+    DEBUG_PRINTLN("Unable to connect to MQTT broker.");
 #ifdef ONBOARD_LED
-    ToggleLed(LED, 1000, 4);
+    ToggleLed(LED, 100, 40);
 #endif
 #ifdef DEEP_SLEEP
     ESP.deepSleep(DS_DURATION_MIN * 60000000);
@@ -168,7 +170,15 @@ void loop()
     else
     {
       DEBUG_PRINTLN("Unable to connect to MQTT broker.");
-      delay(100);
+#ifdef ONBOARD_LED
+      ToggleLed(LED, 100, 40);
+#endif
+#ifdef DEEP_SLEEP
+      ESP.deepSleep(DS_DURATION_MIN * 60000000);
+      delay(3000);
+#else
+      ESP.reset();
+#endif
     }
   }
   else
