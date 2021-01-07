@@ -7,6 +7,10 @@
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include "macro-handling.h"
+
+// WiFi CLient object name
+#define WIFI_CLTNAME CLTNAME
 
 // Set WiFi Sleep Mode
 // ====================
@@ -23,5 +27,8 @@
 // ============================
 extern const char *ssid;
 extern const char *password;
+
+// DHCP Hostname to report
+#define WIFI_DHCPNAME TEXTIFY(CLTNAME)
 
 #endif //WIFI_CONFIG_H

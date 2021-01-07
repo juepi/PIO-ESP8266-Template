@@ -37,7 +37,7 @@ If you want to improve accuracy, measure the actual voltage with a multimeter an
 
 ## Importance of `ClientName` Setting
 Note that the `ClientName` configured in the `platformio.ini` file will also be used as the hostname reported to your DHCP server when the ESP fetches an IP-address. This is especially important, as OTA-flashing will also require your networking environment to be able to resolve this hostname to the ESP's IP-address!  
-See `upload_port`setting in the `platformio.ini` file. If you're having troubles with OTA-flashing, you might want to check that first by pinging the confgured `ClientName`.
+See `upload_port`setting in the `platformio.ini` file. If you're having troubles with OTA-flashing, you might want to check that first by pinging the configured `ClientName`.
 
 ## Compiling and flashing walkthrough
 I will give a rough walkthrough on the first steps, assuming you have a working PlatformIO environment:
@@ -57,7 +57,7 @@ Deactivate OTA-flashing in the board specific area:
 * Adopt board info and hardware settings in `include/hardware-config.h` if needed
 * Compile and flash
 
-**To re-flash the sketch over OTA:**
+**To re-flash the sketch OTA:**
 * Prepare `platformio.ini` for OTA flashing
 Activate OTA-flashing in the board specific area:
 ```
