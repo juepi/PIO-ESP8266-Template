@@ -3,7 +3,7 @@ A template for ESP8266 programming using VSC + [PlatformIO](https://platformio.o
 
 ## Local Requirements
 A (local) MQTT broker is mandatory for OTA-Flashing. With deactivated OTA-flashing, you might remove MQTT functionality.  
-Additionally, personal settings like WIFI SSID and Passphrase will be talken from local environment variables, see `platformio.ini`.  
+Additionally, personal settings like WIFI SSID and Passphrase will be taken from local environment variables, see `platformio.ini`.  
 
 ## Hardware Requirements
 To be able to use DEEP_SLEEP functionality, you will most probably need a small hardware modification for you ESP board: connect pin D0 to RST pin. This will allow the ESP to wake up after the defined sleep time as defined in the `include/generic-config.h` file.  
@@ -70,10 +70,10 @@ upload_flags = ${common_env_data.upload_flags}
 * When the ESP boots, it will slowly blink the onboard LED until all MQTT topics are received
 * After that, the onboard LED will start flashing rapidly. The ESP is now waiting for the new binary to be uploaded
 * Click "Upload" in PIO to compile and upload the new sketch
-* When the upload has finished, the ESP will boot the new sketch and finish the OTA update process
+* When the upload has finished, the ESP will boot the new sketch and finish the OTA update process by setting `topic/tree/OTAinProgress` and `topic/tree/OTAupdate` to "off".
 * You can verify the status by reading the `topic/tree/OTAstatus` topic, which should throw the string "update_success"
 
-### Adding your own MQTT topics to the sketch
+### Adding your own MQTT topic subscriptions to the sketch
 If you want to add your own MQTT topic subscription, you will need to adopt the following files:  
 
 * `include/mqtt-ota-config.h`  
@@ -83,7 +83,7 @@ Define/declare your topic along with required vars here.
 Define initial values of your vars here.  
 
 * `src/common-functions.cpp`  
-Include message handling of your topic(s) in the `MqttCallback` function by adding new "else if"´s:  
+Include message handling of your topic(s) in the `MqttCallback` function by adding new `else if`´s:  
 ```
 else if (String(topic) == your_defined_topic)
 ```
