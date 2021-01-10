@@ -45,6 +45,7 @@ I will give a rough walkthrough on the first steps, assuming you have a working 
     - WIFI_SSID
     - WIFI_PSK
     - MQTT_BROKER --> IP-Address of your broker
+    - OTA_PWD --> Passphrase to use for OTA updates
 * Adopt `ClientName` in `platformio.ini` as needed
 * Prepare `platformio.ini` for wired flashing
 Deactivate OTA-flashing in the board specific area:
