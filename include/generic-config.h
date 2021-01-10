@@ -10,7 +10,7 @@
 
 // Firmware Information
 #define FIRMWARE_NAME "PIO ESP8266 Template"
-#define FIRMWARE_VERSION "1.0.0"
+#define FIRMWARE_VERSION "1.0.1"
 
 // Serial Output configuration
 //

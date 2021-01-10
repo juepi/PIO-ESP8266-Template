@@ -15,3 +15,5 @@ bool OtaIPsetBySketch = false;
 bool SentOtaIPtrue = false;
 #endif
 float VCC = 3.333;
+unsigned int SubscribedTopics = 0;
+unsigned int ReceivedTopics = 0;

@@ -5,6 +5,7 @@
 #ifndef MACRO_HANDLING_H
 #define MACRO_HANDLING_H
 
-#define TEXTIFY(A) #A
+#define DOUBLEESCAPE(a) #a
+#define TEXTIFY(a) DOUBLEESCAPE(a)
 
 #endif //MACRO_HANDLING_H

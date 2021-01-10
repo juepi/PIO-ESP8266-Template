@@ -43,6 +43,8 @@ void wifi_setup()
     DEBUG_PRINTLN("WiFi connected");
     DEBUG_PRINT("Device IP Address: ");
     DEBUG_PRINTLN(WiFi.localIP());
+    DEBUG_PRINT("DHCP Hostname: ");
+    DEBUG_PRINTLN(WIFI_DHCPNAME);
 #ifdef ONBOARD_LED
     // WiFi connected - blink once
     ToggleLed(LED, 200, 2);

@@ -19,9 +19,9 @@
 // Message buffer for incoming Data from MQTT subscriptions
 extern char message_buff[20];
 
-// Required time to fetch topics after a boot
-// Important during OTA-flash
-#define WAIT_MILLIS_FOR_TOPICS_AFTER_BOOT 27000
+// Keep an eye on subscribed / received topics
+extern unsigned int SubscribedTopics;
+extern unsigned int ReceivedTopics;
 
 // MQTT Topic Tree prepended to all topics
 #define TOPTREE "HB7/Test/"

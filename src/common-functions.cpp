@@ -40,10 +40,12 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
         if (msgString == "on")
         {
             OTAupdate = true;
+            ReceivedTopics++;
         }
         else if (msgString == "off")
         {
             OTAupdate = false;
+            ReceivedTopics++;
         }
         else
         {
@@ -56,10 +58,12 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
         if (msgString == "on")
         {
             OtaInProgress = true;
+            ReceivedTopics++;
         }
         else if (msgString == "off")
         {
             OtaInProgress = false;
+            ReceivedTopics++;
         }
         else
         {

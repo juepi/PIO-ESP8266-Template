@@ -48,6 +48,7 @@ bool MqttSubscribe(const char *Topic)
   if (mqttClt.subscribe(Topic))
   {
     DEBUG_PRINTLN("Subscribed to " + String(Topic));
+    SubscribedTopics++;
     mqttClt.loop();
     return true;
   }
@@ -62,6 +63,9 @@ bool MqttSubscribe(const char *Topic)
 // Function to connect to MQTT Broker and subscribe to Topics
 bool ConnectToBroker()
 {
+  // Reset subscribed/received Topics counters
+  SubscribedTopics = 0;
+  ReceivedTopics = 0;
   bool RetVal = false;
   int ConnAttempt = 0;
   // Try to connect x times, then return error
@@ -117,14 +121,22 @@ void setup()
   // Setup MQTT Connection to broker and subscribe to topic
   if (ConnectToBroker())
   {
-    DEBUG_PRINTLN("Connected to MQTT broker, fetching topics..");
-    mqttClt.loop();
+    // New connection to broker, fetch topics
+    // ATTN: will run endlessly if subscribed topics
+    // does not have retained messages and no one posts a message
+    DEBUG_PRINT("Waiting for topics..");
+    while (ReceivedTopics < SubscribedTopics)
+    {
+      DEBUG_PRINT(".");
+      mqttClt.loop();
 #ifdef ONBOARD_LED
-    // broker connected - blink twice
-    ToggleLed(LED, 200, 4);
+      ToggleLed(LED, 100, 2);
 #else
-    delay(500);
+      delay(100);
 #endif
+    }
+    DEBUG_PRINTLN("");
+    DEBUG_PRINTLN("All topics received.");
   }
   else
   {
@@ -148,7 +160,6 @@ void setup()
 
 #ifdef ONBOARD_LED
   // Signal setup finished
-  delay(300);
   ToggleLed(LED, 200, 6);
 #endif
 }
@@ -165,7 +176,22 @@ void loop()
   {
     if (ConnectToBroker())
     {
-      mqttClt.loop();
+      // New connection to broker, fetch topics
+      // ATTN: will run endlessly if subscribed topics
+      // does not have retained messages and no one posts a message
+      DEBUG_PRINT("Waiting for topics..");
+      while (ReceivedTopics < SubscribedTopics)
+      {
+        DEBUG_PRINT(".");
+        mqttClt.loop();
+#ifdef ONBOARD_LED
+        ToggleLed(LED, 100, 2);
+#else
+        delay(100);
+#endif
+      }
+      DEBUG_PRINTLN("");
+      DEBUG_PRINTLN("All topics received.");
     }
     else
     {
@@ -191,18 +217,6 @@ void loop()
   // only loop through OTA function until finished (or reset by MQTT)
   if (OTAupdate)
   {
-    if (millis() < WAIT_MILLIS_FOR_TOPICS_AFTER_BOOT)
-    {
-      // this delay is required to make sure that we know our correct status before doing anything..
-      // shorter delay will not work reliably (fetching all MQTT topics takes a long time)
-      DEBUG_PRINTLN("Sketch just booted, delaying OTA operation until all MQTT topics arrived..");
-#ifdef ONBOARD_LED
-      ToggleLed(LED, 1000, 2);
-#else
-      delay(2000);
-#endif
-      return;
-    }
     if (OtaInProgress && !OtaIPsetBySketch)
     {
       DEBUG_PRINTLN("OTA firmware update successful, resuming normal operation..");
