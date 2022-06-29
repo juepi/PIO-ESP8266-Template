@@ -5,9 +5,6 @@
 #ifndef MQTT_OTA_CONFIG_H
 #define MQTT_OTA_CONFIG_H
 
-#include <Arduino.h>
-#include <PubSubClient.h>
-#include "wifi-config.h"
 #include "macro-handling.h"
 
 // MQTT Broker Settings

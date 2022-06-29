@@ -2,7 +2,6 @@
  * ESP8266 Template
  * Common Functions
  */
-#include <Arduino.h>
 #include "common-functions.h"
 
 void ToggleLed(int PIN, int WaitTime, int Count)

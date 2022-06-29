@@ -6,7 +6,6 @@
 #define GENERIC_CONFIG_H
 
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
 
 // Firmware Information
 #define FIRMWARE_NAME "PIO ESP8266 Template"

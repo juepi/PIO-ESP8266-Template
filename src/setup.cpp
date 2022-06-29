@@ -2,9 +2,32 @@
  * ESP8266 Template
  * Setup Functions
  */
-#include <Arduino.h>
-#include "setup-functions.h"
+#include "setup.h"
 
+// Define WiFi Variables
+const char *ssid = WIFI_SSID;
+const char *password = WIFI_PSK;
+
+// Define OTA and MQTT related Variables
+char message_buff[20];
+#ifdef OTA_UPDATE
+bool OTAupdate = false;
+bool SentUpdateRequested = false;
+bool OtaInProgress = false;
+bool OtaIPsetBySketch = false;
+bool SentOtaIPtrue = false;
+#endif
+float VCC = 3.333;
+unsigned int SubscribedTopics = 0;
+unsigned int ReceivedTopics = 0;
+
+// Set ADC mode to read VCC (Attn: Pin A0 must be floating!)
+// ==========================================================
+ADC_MODE(ADC_VCC);
+
+
+// WiFi Setup function
+// ====================
 void wifi_setup()
 {
     // Set WiFi Sleep Mode
@@ -51,6 +74,9 @@ void wifi_setup()
 #endif
 }
 
+
+// OTA Setup function
+// ===================
 #ifdef OTA_UPDATE
 void ota_setup()
 {

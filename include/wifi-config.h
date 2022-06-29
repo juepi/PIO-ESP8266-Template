@@ -5,8 +5,6 @@
 #ifndef WIFI_CONFIG_H
 #define WIFI_CONFIG_H
 
-#include <Arduino.h>
-#include <ESP8266WiFi.h>
 #include "macro-handling.h"
 
 // WiFi CLient object name

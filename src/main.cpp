@@ -18,19 +18,7 @@
  * Keep in mind that you'll need a reliable power source for OTA updates, 2x AA batteries might not work.
  * If you brick your ESP during OTA update, you can probably revive it by flashing it wired.
  */
-
-#include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
-#include <WiFiUdp.h>
-#include <ArduinoOTA.h>
-#include <PubSubClient.h>
-#include "hardware-config.h"
-#include "generic-config.h"
-#include "wifi-config.h"
-#include "mqtt-ota-config.h"
-#include "common-functions.h"
-#include "setup-functions.h"
+#include "setup.h"
 
 // Setup WiFi instance
 WiFiClient WIFI_CLTNAME;
