@@ -15,7 +15,7 @@ extern bool MqttSubscribe(const char *Topic);
 extern bool MqttConnectToBroker();
 extern void MqttUpdater();
 #ifdef OTA_UPDATE
-extern void OTAUpdateHandler();
+extern bool OTAUpdateHandler();
 #endif
 
 #endif // COMMON_FUNCTIONS_H

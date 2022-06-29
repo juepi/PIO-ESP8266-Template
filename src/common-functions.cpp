@@ -116,8 +116,9 @@ void MqttUpdater()
 }
 
 // Function to handle OTA flashing (called in main loop)
+// Returns TRUE while OTA-update was requested or in progress
 #ifdef OTA_UPDATE
-void OTAUpdateHandler()
+bool OTAUpdateHandler()
 {
     // If OTA Firmware Update is requested,
     // only loop through OTA function until finished (or reset by MQTT)
@@ -134,7 +135,7 @@ void OTAUpdateHandler()
             OtaIPsetBySketch = true;
             SentOtaIPtrue = false;
             SentUpdateRequested = false;
-            return;
+            return false;
         }
         if (!SentUpdateRequested)
         {
@@ -144,7 +145,7 @@ void OTAUpdateHandler()
         DEBUG_PRINTLN("OTA firmware update requested, waiting for upload..");
 #ifdef ONBOARD_LED
         // Signal OTA update requested
-        ToggleLed(LED, 100, 10);
+        ToggleLed(LED, 100, 5);
 #endif
         // set MQTT reminder that OTA update was executed
         if (!SentOtaIPtrue)
@@ -158,7 +159,7 @@ void OTAUpdateHandler()
         }
         // call OTA function to receive upload
         ArduinoOTA.handle();
-        return;
+        return true;
     }
     else
     {
@@ -171,8 +172,10 @@ void OTAUpdateHandler()
             OtaIPsetBySketch = true;
             SentOtaIPtrue = false;
             SentUpdateRequested = false;
+            return false;
         }
     }
+    return false;
 }
 #endif // OTA_UPDATE
 

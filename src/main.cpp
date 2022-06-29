@@ -34,7 +34,11 @@ void loop()
 
 #ifdef OTA_UPDATE
   // Handle OTA updates
-  OTAUpdateHandler();
+  if(OTAUpdateHandler())
+  {
+    // OTA Update in progress, restart main loop
+    return;
+  }
 #endif
 
 // START STUFF YOU WANT TO RUN HERE!
