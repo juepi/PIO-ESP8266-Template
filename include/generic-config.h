@@ -1,7 +1,7 @@
 /*
-*   ESP8266 Template
-*   Firmware, DeepSleep and Serial Settings
-*/
+ *   ESP8266 Template
+ *   Firmware, DeepSleep and Serial Settings
+ */
 #ifndef GENERIC_CONFIG_H
 #define GENERIC_CONFIG_H
 
@@ -9,7 +9,7 @@
 
 // Firmware Information
 #define FIRMWARE_NAME "PIO ESP8266 Template"
-#define FIRMWARE_VERSION "1.0.1"
+#define FIRMWARE_VERSION "1.0.2"
 
 // Serial Output configuration
 //
@@ -23,8 +23,7 @@
 #endif
 
 // ESP DeepSleep Configuration
-//
 // DeepSleep duration in Minutes (max. 60)
 #define DS_DURATION_MIN 2
 
-#endif //GENERIC_CONFIG_H
+#endif // GENERIC_CONFIG_H

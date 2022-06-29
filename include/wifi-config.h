@@ -1,7 +1,7 @@
 /*
-*   ESP8266 Template
-*   WiFi Settings
-*/
+ *   ESP8266 Template
+ *   WiFi Settings
+ */
 #ifndef WIFI_CONFIG_H
 #define WIFI_CONFIG_H
 
@@ -29,4 +29,4 @@ extern const char *password;
 // DHCP Hostname to report
 #define WIFI_DHCPNAME TEXTIFY(CLTNAME)
 
-#endif //WIFI_CONFIG_H
+#endif // WIFI_CONFIG_H

@@ -1,7 +1,7 @@
 /*
-*   ESP8266 Template
-*   Include all config files and Setup Function declarations
-*/
+ *   ESP8266 Template
+ *   Include all config files and Setup Function declarations
+ */
 #ifndef SETUP_H
 #define SETUP_H
 
@@ -17,5 +17,10 @@
 // Declare setup functions
 extern void wifi_setup();
 extern void ota_setup();
+extern void setup();
 
-#endif //SETUP_H
+// Declare global objects
+extern WiFiClient WIFI_CLTNAME;
+extern PubSubClient mqttClt;
+
+#endif // SETUP_H
