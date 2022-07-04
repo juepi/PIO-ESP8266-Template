@@ -150,6 +150,9 @@ void setup()
   ota_setup();
 #endif
 
+  // Setup user specific stuff
+  user_setup();
+  
 #ifdef ONBOARD_LED
   // Signal setup finished
   ToggleLed(LED, 200, 6);

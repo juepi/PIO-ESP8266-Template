@@ -108,3 +108,6 @@ ATTN: OTA flashing did not work due to an error in macro handling!
 
 ## Release 1.0.2
 - Major code cleanup
+
+## Release 1.0.3
+- Moved user specific stuff into dedicated files / functions (`user_setup` and `user_loop`)

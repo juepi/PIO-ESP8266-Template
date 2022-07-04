@@ -41,12 +41,8 @@ void loop()
   }
 #endif
 
-// START STUFF YOU WANT TO RUN HERE!
-// ============================================
-#ifdef ONBOARD_LED
-  // Toggle LED at each loop
-  ToggleLed(LED, 500, 4);
-#endif
+  // Run user specific loop
+  user_loop();
 
   // Read VCC and publish to MQTT
   delay(300);
