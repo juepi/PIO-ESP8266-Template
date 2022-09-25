@@ -9,7 +9,7 @@
 // Don't forget to add them into platformio.ini
 //#define <user_lib.h>
 
-// Declare user setup and main loop functions
+// Declare user setup, main and custom functions
 extern void user_setup();
 extern void user_loop();
 

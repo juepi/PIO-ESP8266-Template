@@ -36,7 +36,8 @@ Note that we do not subscribe to this topic, we only publish to it.
 
 ### Importance of `ClientName` Setting
 Note that the `ClientName` configured in the `platformio.ini` file will also be used as the hostname reported to your DHCP server when the ESP fetches an IP-address. This is especially important, as OTA-flashing will also require your networking environment to be able to resolve this hostname to the ESP's IP-address!  
-See `upload_port`setting in the `platformio.ini` file. If you're having troubles with OTA-flashing, you might want to check that first by pinging the configured `ClientName`.
+See `upload_port`setting in the `platformio.ini` file. If you're having troubles with OTA-flashing, you might want to check that first by pinging the configured `ClientName`.  
+**ATTENTION:** `ClientName` must not contain dashes.
 
 ### Compiling and flashing walkthrough
 I will give a rough walkthrough on the first steps, assuming you have a working PlatformIO environment:
@@ -111,3 +112,5 @@ ATTN: OTA flashing did not work due to an error in macro handling!
 
 ## Release 1.0.3
 - Moved user specific stuff into dedicated files / functions (`user_setup` and `user_loop`)
+- Added `MqttDelay` function which handles MQTT connection/subscriptions while delaying
+- README update on `ClientName` limitation

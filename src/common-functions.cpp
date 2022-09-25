@@ -115,6 +115,33 @@ void MqttUpdater()
     }
 }
 
+// Function to periodically handle MQTT stuff while delaying
+// This causes some inaccuracy in the delay of course.
+void MqttDelay(uint32_t delayms)
+{
+    //unsigned long md_start = millis();
+    // Call MqttUpdater every 200ms
+    int Counter = delayms / 200;
+    if (Counter == 0)
+    {
+        // Delay less than 200ms requested, just run delay and return
+        delay(delayms);
+        return;
+    }
+    else
+    {
+        for (int i = 0; i < Counter; i++)
+        {
+            MqttUpdater();
+            delay(200);
+        }
+    }
+    //unsigned long real_delay = millis() - md_start;
+    //DEBUG_PRINTLN("MqttDelay requested: " + String(delayms));
+    //DEBUG_PRINTLN("MqttDelay Counter: " + String(Counter));
+    //DEBUG_PRINTLN("MqttDelay duration: " + String(real_delay));    
+}
+
 // Function to handle OTA flashing (called in main loop)
 // Returns TRUE while OTA-update was requested or in progress
 #ifdef OTA_UPDATE
