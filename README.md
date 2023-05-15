@@ -6,7 +6,7 @@ A (local) MQTT broker is mandatory for OTA-Flashing. With deactivated OTA-flashi
 Additionally, personal settings like WIFI SSID and Passphrase will be taken from local environment variables, see `platformio.ini`.  
 
 ## Hardware Requirements
-To be able to use DEEP_SLEEP functionality, you will most probably need a small hardware modification for you ESP board: connect pin D0 to RST pin. This will allow the ESP to wake up after the defined sleep time as defined in the `include/generic-config.h` file. Note that there is a hardware limitiation on the ESP8266 of approx. 1 hour for maximum deep sleep time.  
+To be able to use DEEP_SLEEP functionality, you will most probably need a small hardware modification for you ESP board: connect pin D0 to RST pin. This will allow the ESP to wake up after the defined sleep time as defined in the `include/generic-config.h` file. Note that there is a hardware limitiation on the ESP8266 of approx. **1 hour for maximum deep sleep time**.  
 
 ## An important notice on MQTT usage
 As the main intention of this program is to run on a MCU that is powered off (sleeping) most of the time, we will **only work with retained messages** here! This ensures that a client subscribing to a topic will receive the last value published "instantly" and does not need to wait for someone to publish "latest news".  
@@ -14,7 +14,7 @@ As the main intention of this program is to run on a MCU that is powered off (sl
 
 ## Configuration
 In addition to the `platformio.ini` file, see header files in the `include/` folder for additional settings.  
-Configureable settings (`include/*-config.h`) should be documented well enough there - hopefully ;-)
+Configureable settings (`include/*-config.h`) should be documented well enough there - hopefully *wink*.
 
 ### MQTT Topics used
 In order to run OTA updates, you will need at least the following MQTT topics on your broker (case sensitive) to be pre-created with the default retained message so ESP can subscribe to them:
@@ -37,7 +37,6 @@ Note that we do not subscribe to this topic, we only publish to it.
 ### Importance of `ClientName` Setting
 Note that the `ClientName` configured in the `platformio.ini` file will also be used as the hostname reported to your DHCP server when the ESP fetches an IP-address. This is especially important, as OTA-flashing will also require your networking environment to be able to resolve this hostname to the ESP's IP-address!  
 See `upload_port`setting in the `platformio.ini` file. If you're having troubles with OTA-flashing, you might want to check that first by pinging the configured `ClientName`.  
-**ATTENTION:** `ClientName` must not contain dashes.
 
 ### Compiling and flashing walkthrough
 I will give a rough walkthrough on the first steps, assuming you have a working PlatformIO environment:
@@ -66,7 +65,7 @@ upload_protocol = ${common_env_data.upload_protocol}
 upload_port = ${common_env_data.upload_port}
 upload_flags = ${common_env_data.upload_flags}
 ```
-* Set topic `topic/tree/OTAupdate` retained "on"
+* Set topic `topic/tree/OTAupdate` **retained** "on"
 * wait for the ESP to start up (or reset your ESP)
 * When the ESP boots, it will slowly blink the onboard LED until all MQTT topics are received
 * After that, the onboard LED will start flashing rapidly. The ESP is now waiting for the new binary to be uploaded
@@ -74,29 +73,38 @@ upload_flags = ${common_env_data.upload_flags}
 * When the upload has finished, the ESP will boot the new sketch and finish the OTA update process by setting `topic/tree/OTAinProgress` and `topic/tree/OTAupdate` to "off".
 * You can verify the status by reading the `topic/tree/OTAstatus` topic, which should throw the string "update_success"
 
-### Adding your own MQTT topic subscriptions to the sketch
-If you want to add your own MQTT topic subscription, you will need to adopt the following files:  
+### Adding your own code to the template
+To add your own functionality to the template, you will need to adopt the following files:  
 
 * `include/mqtt-ota-config.h`  
-Define/declare your topic along with required vars here.  
+Update the `TOPTREE` to your needs.  
 
-* `src/setup.cpp`  
-Define initial values of your vars here.  
+* `include/user-config.h`  
+Define/declare your topics along with required global vars and libs here.  
 
-* `src/common-functions.cpp`  
-Include message handling of your topic(s) in the `MqttCallback` function by adding new `else if`´s:  
-```
-else if (String(topic) == your_defined_topic)
-```
+* `src/user_setup_loop.cpp`  
+Add your desired functionality to the `user_loop` and `user_setup` functions.  
 
-* `src/common-functions.cpp`  
-Subscribe to your topics by adding `MqttSubscribe` function calls in the `MqttConnectToBroker` function:
+* `src/mqtt-subscriptions.cpp`  
+Add an array element to the `MqttSubscriptions` struct array, in example:  
 ```
-MqttSubscribe(your_defined_topic);
+{.Topic = ota_topic, .Type = 0, .Subscribed = false, .MsgRcvd = false, .BoolPtr = &OTAupdate }
 ```
+The following data types are supported (parameter `Type`):
+* **BOOL (Type = 0)**
+Use the `.BoolPtr` to point to a global `bool` variable where you want to store the received messages for this topic. The BOOL type expects either "on" or "off" text messages to be received from the subscribed topic.  
+  
+* **INT (Type = 1)**
+Use the `.IntPtr` to point to a global `int` variable. The string function `.toInt()` will be used to decode the message to an integer value.  
+  
+* **FLOAT (Type = 2)**
+Use the `.FloatPtr` to point to a global `float` variable. The string function `.toFloat()` will be used to decode the message to a float value. Make sure to use dots as decimal point in your messages.  
 
-### Adding your own code to the sketch main loop
-Add your desired functionality to the main loop (`src/main.cpp`) at the commented section.  
+
+### Note on delays and MQTT communication
+I have tried to get rid of the `delay()`s implemented to allow background WiFi processing (by using `WiFiClient.flush` instead of delays and configuring `WiFiClient.setNoDelay`), but i was not able to get satisfying MQTT communication without them. Either it took too long to fetch new messages from subscribed topics, or sending new messages crashed (resetted) the ESP.  
+My recommendation is, to make sure to add at least a 100ms delay after sending a bunch of MQTT messages. You may also want to use the `MqttDelay`function if you add longer delays (above 200ms), as it will automatically call the PubSubClient `loop` function to fetch new MQTT messages every 200ms of delay.  
+In addition, i have added a `user_loop` runtime specific delay in the main loop in v1.1.0: if the `user_loop` takes less than 100ms for execution, a 100ms delay will execute in the main loop.
 
 # Version History
 
@@ -114,3 +122,10 @@ ATTN: OTA flashing did not work due to an error in macro handling!
 - Moved user specific stuff into dedicated files / functions (`user_setup` and `user_loop`)
 - Added `MqttDelay` function which handles MQTT connection/subscriptions while delaying
 - README update on `ClientName` limitation
+
+## Release v1.1.0
+- Fixed `Clientname`limitation
+- Added ESP reboot when cancelling OTA Update
+- Added `user_loop` runtime dependent 100ms delay in main loop
+- Reworked MQTT subscriptions
+- OTA updating support now mandatory

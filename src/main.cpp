@@ -28,26 +28,36 @@
  */
 void loop()
 {
+  static unsigned long start_user_loop = 0;
+  static unsigned long duration_user_loop = 0;
+  static float VCC = 0;
+
   delay(200);
   // Check connection to MQTT broker, subscribe and update topics
   MqttUpdater();
 
-#ifdef OTA_UPDATE
   // Handle OTA updates
   if (OTAUpdateHandler())
   {
     // OTA Update in progress, restart main loop
     return;
   }
-#endif
 
-  // Run user specific loop
+  // Run user specific loop and measure duration
+  start_user_loop = millis();
   user_loop();
+  duration_user_loop = millis() - start_user_loop;
+
+  // Spare some CPU time for background tasks (if we're not in a hurry)
+  if (duration_user_loop < 100)
+  {
+    delay(100);
+  }
 
   // Read VCC and publish to MQTT
   delay(300);
   VCC = ((float)ESP.getVcc()) / VCCCORRDIV;
-  mqttClt.publish(vcc_topic, String(VCC).c_str(), true);
+  mqttClt.publish(vcc_topic, String(VCC,2).c_str(), true);
   delay(100);
 
 #ifdef DEEP_SLEEP

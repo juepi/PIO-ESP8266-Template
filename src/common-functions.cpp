@@ -1,5 +1,5 @@
 /*
- * ESP8266 Template
+ * ESP32 Template
  * Common Functions
  */
 #include "setup.h"
@@ -15,31 +15,16 @@ void ToggleLed(int PIN, int WaitTime, int Count)
     }
 }
 
-// Function to subscribe to MQTT topics
-bool MqttSubscribe(const char *Topic)
-{
-    if (mqttClt.subscribe(Topic))
-    {
-        DEBUG_PRINTLN("Subscribed to " + String(Topic));
-        // Success, update global subscription counter
-        SubscribedTopics++;
-        mqttClt.loop();
-        return true;
-    }
-    else
-    {
-        DEBUG_PRINTLN("Failed to subscribe to " + String(Topic));
-        delay(100);
-        return false;
-    }
-}
-
 // Function to connect to MQTT Broker and subscribe to Topics
 bool MqttConnectToBroker()
 {
     // Reset subscribed/received Topics counters
-    SubscribedTopics = 0;
-    ReceivedTopics = 0;
+    int SubscribedTopics = 0;
+    for (int i = 0; i < SubscribedTopicCnt; i++)
+    {
+        MqttSubscriptions[i].Subscribed = false;
+        MqttSubscriptions[i].MsgRcvd = false;
+    }
     bool RetVal = false;
     int ConnAttempt = 0;
     // Try to connect x times, then return error
@@ -52,11 +37,21 @@ bool MqttConnectToBroker()
             DEBUG_PRINTLN("connected");
             RetVal = true;
 
-// Subscribe to Topics
-#ifdef OTA_UPDATE
-            MqttSubscribe(ota_topic);
-            MqttSubscribe(otaInProgress_topic);
-#endif // OTA_UPDATE
+            // Subscribe to all configured Topics
+            while (SubscribedTopics < SubscribedTopicCnt)
+            {
+                for (int i = 0; i < SubscribedTopicCnt; i++)
+                {
+                    if (!MqttSubscriptions[i].Subscribed)
+                    {
+                        if (mqttClt.subscribe(MqttSubscriptions[i].Topic))
+                        {
+                            MqttSubscriptions[i].Subscribed = true;
+                            SubscribedTopics++;
+                        }
+                    }
+                }
+            }
             delay(200);
             break;
         }
@@ -81,19 +76,31 @@ void MqttUpdater()
             // New connection to broker, fetch topics
             // ATTN: will run endlessly if subscribed topics
             // does not have retained messages and no one posts a message
-            DEBUG_PRINT("Waiting for topics..");
-            while (ReceivedTopics < SubscribedTopics)
+            DEBUG_PRINT("Waiting for messages..");
+            bool MissingTopics = true;
+            while (MissingTopics)
             {
-                DEBUG_PRINT(".");
-                mqttClt.loop();
+                MissingTopics = false;
+                for (int i = 0; i < SubscribedTopicCnt; i++)
+                {
+                    if (!MqttSubscriptions[i].MsgRcvd)
+                    {
+                        MissingTopics = true;
+                    }
+                }
+                if (MissingTopics)
+                {
+                    DEBUG_PRINT(".:T!:.");
+                    mqttClt.loop();
 #ifdef ONBOARD_LED
-                ToggleLed(LED, 100, 2);
+                    ToggleLed(LED, 50, 2);
 #else
-                delay(100);
+                    delay(100);
 #endif
+                }
             }
             DEBUG_PRINTLN("");
-            DEBUG_PRINTLN("All topics received.");
+            DEBUG_PRINTLN("Messages for all subscribed topics received.");
         }
         else
         {
@@ -119,8 +126,7 @@ void MqttUpdater()
 // This causes some inaccuracy in the delay of course.
 void MqttDelay(uint32_t delayms)
 {
-    //unsigned long md_start = millis();
-    // Call MqttUpdater every 200ms
+    //  Call MqttUpdater every 200ms
     int Counter = delayms / 200;
     if (Counter == 0)
     {
@@ -136,15 +142,10 @@ void MqttDelay(uint32_t delayms)
             delay(200);
         }
     }
-    //unsigned long real_delay = millis() - md_start;
-    //DEBUG_PRINTLN("MqttDelay requested: " + String(delayms));
-    //DEBUG_PRINTLN("MqttDelay Counter: " + String(Counter));
-    //DEBUG_PRINTLN("MqttDelay duration: " + String(real_delay));    
 }
 
 // Function to handle OTA flashing (called in main loop)
 // Returns TRUE while OTA-update was requested or in progress
-#ifdef OTA_UPDATE
 bool OTAUpdateHandler()
 {
     // If OTA Firmware Update is requested,
@@ -154,6 +155,8 @@ bool OTAUpdateHandler()
         if (OtaInProgress && !OtaIPsetBySketch)
         {
             DEBUG_PRINTLN("OTA firmware update successful, resuming normal operation..");
+            // Make sure that MQTT Broker is connected
+            MqttUpdater();
             mqttClt.publish(otaStatus_topic, String(UPDATEOK).c_str(), true);
             mqttClt.publish(ota_topic, String("off").c_str(), true);
             mqttClt.publish(otaInProgress_topic, String("off").c_str(), true);
@@ -162,6 +165,7 @@ bool OTAUpdateHandler()
             OtaIPsetBySketch = true;
             SentOtaIPtrue = false;
             SentUpdateRequested = false;
+            delay(200);
             return false;
         }
         if (!SentUpdateRequested)
@@ -182,7 +186,7 @@ bool OTAUpdateHandler()
             OtaInProgress = true;
             SentOtaIPtrue = true;
             OtaIPsetBySketch = true;
-            delay(100);
+            delay(200);
         }
         // call OTA function to receive upload
         ArduinoOTA.handle();
@@ -192,25 +196,28 @@ bool OTAUpdateHandler()
     {
         if (SentUpdateRequested)
         {
-            DEBUG_PRINTLN("OTA firmware update cancelled by MQTT, resuming normal operation..");
+            DEBUG_PRINTLN("OTA firmware update cancelled by user, cleaning up and rebooting..");
+            // Make sure that MQTT Broker is connected
+            MqttUpdater();
             mqttClt.publish(otaStatus_topic, String(UPDATECANC).c_str(), true);
             mqttClt.publish(otaInProgress_topic, String("off").c_str(), true);
-            OtaInProgress = false;
-            OtaIPsetBySketch = true;
-            SentOtaIPtrue = false;
-            SentUpdateRequested = false;
+            delay(200);
+            // Reboot after cancelled update
+            ESP.restart();
+            delay(500);
             return false;
         }
     }
     return false;
 }
-#endif // OTA_UPDATE
 
 /*
  * Callback Functions
  * ========================================================================
  */
+//
 // MQTT Subscription callback function
+//
 void MqttCallback(char *topic, byte *payload, unsigned int length)
 {
     unsigned int i = 0;
@@ -224,49 +231,42 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
 
     DEBUG_PRINTLN("MQTT: Message arrived [" + String(topic) + "]: " + String(msgString));
 
-// run through topics
-#ifdef OTA_UPDATE
-    if (String(topic) == ota_topic)
+    // run through topics
+    for (int i = 0; i < SubscribedTopicCnt; i++)
     {
-        if (msgString == "on")
+        if (String(topic) == String(MqttSubscriptions[i].Topic))
         {
-            OTAupdate = true;
-            ReceivedTopics++;
-        }
-        else if (msgString == "off")
-        {
-            OTAupdate = false;
-            ReceivedTopics++;
-        }
-        else
-        {
-            DEBUG_PRINTLN("MQTT: ERROR: Fetched invalid OTA-Update: " + String(msgString));
-            delay(200);
+            // Topic found, handle message
+            switch (MqttSubscriptions[i].Type)
+            {
+            case 0:
+                // Handle subscription Type BOOL
+                if (msgString == "on")
+                {
+                    *MqttSubscriptions[i].BoolPtr = true;
+                    MqttSubscriptions[i].MsgRcvd = true;
+                }
+                else if (msgString == "off")
+                {
+                    *MqttSubscriptions[i].BoolPtr = false;
+                    MqttSubscriptions[i].MsgRcvd = true;
+                }
+                else
+                {
+                    DEBUG_PRINTLN("MQTT: ERROR: Fetched invalid BOOL for topic [" + String(topic) + "]: " + String(msgString));
+                }
+                break;
+            case 1:
+                // Handle subscription of type INTEGER
+                *MqttSubscriptions[i].IntPtr = (int)msgString.toInt();
+                MqttSubscriptions[i].MsgRcvd = true;
+                break;
+            case 2:
+                // Handle subscriptions of type FLOAT
+                *MqttSubscriptions[i].FloatPtr = msgString.toFloat();
+                MqttSubscriptions[i].MsgRcvd = true;
+                break;
+            }
         }
     }
-    else if (String(topic) == otaInProgress_topic)
-    {
-        if (msgString == "on")
-        {
-            OtaInProgress = true;
-            ReceivedTopics++;
-        }
-        else if (msgString == "off")
-        {
-            OtaInProgress = false;
-            ReceivedTopics++;
-        }
-        else
-        {
-            DEBUG_PRINTLN("MQTT: ERROR: Fetched invalid OtaInProgress: " + String(msgString));
-            delay(200);
-        }
-    }
-    else
-    {
-        DEBUG_PRINTLN("ERROR: Unknown topic: " + String(topic));
-        DEBUG_PRINTLN("ERROR: Unknown topic value: " + String(msgString));
-        delay(200);
-    }
-#endif // OTA_UPDATE
 }

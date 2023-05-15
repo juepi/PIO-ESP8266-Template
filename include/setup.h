@@ -13,7 +13,7 @@
 #include "mqtt-ota-config.h"
 #include "common-functions.h"
 #include "hardware-config.h"
-#include "user_setup.h"
+#include "user-config.h"
 
 // Declare setup functions
 extern void wifi_setup();
@@ -21,7 +21,7 @@ extern void ota_setup();
 extern void setup();
 
 // Declare global objects
-extern WiFiClient WIFI_CLTNAME;
+extern WiFiClient WiFiClt;
 extern PubSubClient mqttClt;
 
 #endif // SETUP_H

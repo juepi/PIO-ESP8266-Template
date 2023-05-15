@@ -10,13 +10,11 @@ const char *password = WIFI_PSK;
 
 // Define OTA and MQTT related Variables
 char message_buff[20];
-#ifdef OTA_UPDATE
 bool OTAupdate = false;
 bool SentUpdateRequested = false;
 bool OtaInProgress = false;
 bool OtaIPsetBySketch = false;
 bool SentOtaIPtrue = false;
-#endif
 float VCC = 3.333;
 unsigned int SubscribedTopics = 0;
 unsigned int ReceivedTopics = 0;
@@ -26,10 +24,10 @@ unsigned int ReceivedTopics = 0;
 ADC_MODE(ADC_VCC);
 
 // Setup WiFi instance
-WiFiClient WIFI_CLTNAME;
+WiFiClient WiFiClt;
 
 // Setup PubSub Client instance
-PubSubClient mqttClt(MQTT_BROKER, 1883, MqttCallback, WIFI_CLTNAME);
+PubSubClient mqttClt(MQTT_BROKER, 1883, MqttCallback, WiFiClt);
 
 // WiFi Setup function
 // ====================
@@ -81,7 +79,6 @@ void wifi_setup()
 
 // OTA Setup function
 // ===================
-#ifdef OTA_UPDATE
 void ota_setup()
 {
   // Setup OTA Updates
@@ -122,7 +119,6 @@ void ota_setup()
         delay(500); });
   ArduinoOTA.begin();
 }
-#endif
 
 /*
  * Main Setup Function
@@ -146,9 +142,7 @@ void setup()
   wifi_setup();
 
   // Setup OTA
-#ifdef OTA_UPDATE
   ota_setup();
-#endif
 
   // Setup user specific stuff
   user_setup();
