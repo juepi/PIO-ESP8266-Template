@@ -1,5 +1,5 @@
 /*
- * ESP32 Template
+ * ESP8266 Template
  * Definition of MQTT subscriptions
  */
 #include "mqtt-ota-config.h"
@@ -16,13 +16,13 @@
 //          1 = integer (int)
 //          2 = float
 // .Subscribed: flag, true if successfully subscribed to topic
-// .MsgRcvd: flag, true if a message has been received for subscribed topic
+// .MsgRcvd: Counts messages received for subscribed topic (needs to be initialized with 0 here!)
 // .[Bool|Int|Float]Ptr: Pointer to a global var (according to "Type") where the decoded message info will be stored 
 //
 
 const int SubscribedTopicCnt = 2; // Overall amount of topics to subscribe to
 
 MqttSubCfg MqttSubscriptions[SubscribedTopicCnt]={
-    {.Topic = ota_topic, .Type = 0, .Subscribed = false, .MsgRcvd = false, .BoolPtr = &OTAupdate },
-    {.Topic = otaInProgress_topic, .Type = 0, .Subscribed = false, .MsgRcvd = false, .BoolPtr = &OtaInProgress }
+    {.Topic = ota_topic, .Type = 0, .Subscribed = false, .MsgRcvd = 0, .BoolPtr = &OTAupdate },
+    {.Topic = otaInProgress_topic, .Type = 0, .Subscribed = false, .MsgRcvd = 0, .BoolPtr = &OtaInProgress }
 };

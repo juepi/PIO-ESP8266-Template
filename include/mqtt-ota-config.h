@@ -1,5 +1,5 @@
 /*
- *   ESP32 Template
+ *   ESP8266 Template
  *   MQTT and OTA-Flash Settings
  */
 #ifndef MQTT_OTA_CONFIG_H
@@ -9,6 +9,7 @@
 #include <PubSubClient.h>
 #include "wifi-config.h"
 #include "macro-handling.h"
+#include "user-config.h"
 
 //
 // MQTT Broker Settings
@@ -22,7 +23,10 @@ extern char message_buff[20];
 
 // MQTT Topic Tree prepended to all topics
 // ATTN: Must end with "/"!
+// alternatively defined in user-config.h
+#ifndef TOPTREE
 #define TOPTREE "HB7/Test/"
+#endif
 
 //
 // OTA-Update MQTT Topics and corresponding global vars
@@ -58,7 +62,7 @@ struct MqttSubCfg
     const char *Topic; // Topic to subscribe to
     int Type;          // Type of message data received: 0=bool (message "on/off"); 1=int; 2=float
     bool Subscribed;   // true if successfully subscribed to topic
-    bool MsgRcvd;      // true if a message has been received for topic
+    uint32_t MsgRcvd;  // counter for received messages
     union              // Pointer to Variable which should be updated with the decoded message (only one applies acc. to "Type")
     {
         bool *BoolPtr;
@@ -70,7 +74,7 @@ struct MqttSubCfg
 extern const int SubscribedTopicCnt; // Number of elements in MqttSubscriptions array (define in mqtt-subscriptions.cpp)
 extern MqttSubCfg MqttSubscriptions[];
 
-// Topic where VCC will be published (not yet working with ESP32!)
+// Topic where VCC will be published
 #define vcc_topic TOPTREE "Vbat"
 
 #endif // MQTT_OTA_CONFIG_H

@@ -17,4 +17,7 @@ extern void MqttUpdater();
 extern void MqttDelay(uint32_t delayms);
 extern bool OTAUpdateHandler();
 
+// Declare common global vars
+extern bool JustBooted;
+
 #endif // COMMON_FUNCTIONS_H

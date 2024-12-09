@@ -28,11 +28,14 @@
  */
 void loop()
 {
+#ifdef WIFI_DELAY
   static unsigned long start_user_loop = 0;
   static unsigned long duration_user_loop = 0;
+#endif
+#ifdef READVCC
   static float VCC = 0;
+#endif
 
-  delay(200);
   // Check connection to MQTT broker, subscribe and update topics
   MqttUpdater();
 
@@ -43,6 +46,7 @@ void loop()
     return;
   }
 
+#ifdef WIFI_DELAY
   // Run user specific loop and measure duration
   start_user_loop = millis();
   user_loop();
@@ -51,23 +55,31 @@ void loop()
   // Spare some CPU time for background tasks (if we're not in a hurry)
   if (duration_user_loop < 100)
   {
-    delay(100);
+    delay(WIFI_DELAY);
   }
+#else
+  user_loop();
+#endif
 
+#ifdef READVCC
   // Read VCC and publish to MQTT
   delay(300);
   VCC = ((float)ESP.getVcc()) / VCCCORRDIV;
-  mqttClt.publish(vcc_topic, String(VCC,2).c_str(), true);
+  mqttClt.publish(vcc_topic, String(VCC, 2).c_str(), true);
   delay(100);
+#endif
 
 #ifdef DEEP_SLEEP
   // disconnect WiFi and go to sleep
   DEBUG_PRINTLN("Good night for " + String(DS_DURATION_MIN) + " minutes.");
   WiFi.disconnect();
   ESP.deepSleep(DS_DURATION_MIN * 60000000);
-#else
-  DEBUG_PRINTLN("Loop finished, DeepSleep disabled. Restarting in 5 seconds.");
-#endif
   // ATTN: Sketch continues to run for a short time after initiating DeepSleep, so pause here
   delay(5000);
+#else
+  DEBUG_PRINTLN("Loop finished, DeepSleep disabled, restarting.");
+#endif
+
+  // First iteration of main loop finished
+  JustBooted = false;
 }

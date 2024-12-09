@@ -76,7 +76,7 @@ upload_flags = ${common_env_data.upload_flags}
 ### OTA Update and the firewall
 Your OTA flashing might fail with the following error:
 ```
-Sending invitation to esp32-test 
+Sending invitation to esp-test 
 Authenticating...OK
 20:31:25 [INFO]: Waiting for device...
 20:31:35 [ERROR]: No response from device
@@ -99,7 +99,7 @@ Add your desired functionality to the `user_loop` and `user_setup` functions.
 * `src/mqtt-subscriptions.cpp`  
 Add an array element to the `MqttSubscriptions` struct array, in example:  
 ```
-{.Topic = ota_topic, .Type = 0, .Subscribed = false, .MsgRcvd = false, .BoolPtr = &OTAupdate }
+{.Topic = ota_topic, .Type = 0, .Subscribed = false, .MsgRcvd = 0, .BoolPtr = &OTAupdate }
 ```
 The following data types are supported (parameter `Type`):
 * **BOOL (Type = 0)**
@@ -140,3 +140,11 @@ ATTN: OTA flashing did not work due to an error in macro handling!
 - Added `user_loop` runtime dependent 100ms delay in main loop
 - Reworked MQTT subscriptions
 - OTA updating support now mandatory
+
+## Release v1.1.1
+- `user_loop` runtime dependent delay now configurable in `platformio.ini`
+- removed additional (unnecessary) delays
+- Switched `MsgRcvd` from type `bool` to `uint32_t` counter to be able to keep track if new messages arrive for subscribed topics (increases on new valid message arrival)
+- Minor improvement to allow re-defining MQTT topic tree in `user-config.h` to allow over-writing `mqtt-ota-config.h` when upgrading the framework
+- Reading VCC now optional (configured via define in `platformio.ini`)
+- `JustBooted` global flag available; `true` when running main loop for the first time, then set to `false`

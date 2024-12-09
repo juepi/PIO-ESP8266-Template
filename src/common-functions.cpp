@@ -1,5 +1,5 @@
 /*
- * ESP32 Template
+ * ESP8266 Template
  * Common Functions
  */
 #include "setup.h"
@@ -23,7 +23,7 @@ bool MqttConnectToBroker()
     for (int i = 0; i < SubscribedTopicCnt; i++)
     {
         MqttSubscriptions[i].Subscribed = false;
-        MqttSubscriptions[i].MsgRcvd = false;
+        MqttSubscriptions[i].MsgRcvd = 0;
     }
     bool RetVal = false;
     int ConnAttempt = 0;
@@ -83,7 +83,7 @@ void MqttUpdater()
                 MissingTopics = false;
                 for (int i = 0; i < SubscribedTopicCnt; i++)
                 {
-                    if (!MqttSubscriptions[i].MsgRcvd)
+                    if (MqttSubscriptions[i].MsgRcvd == 0)
                     {
                         MissingTopics = true;
                     }
@@ -244,12 +244,12 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
                 if (msgString == "on")
                 {
                     *MqttSubscriptions[i].BoolPtr = true;
-                    MqttSubscriptions[i].MsgRcvd = true;
+                    MqttSubscriptions[i].MsgRcvd++;
                 }
                 else if (msgString == "off")
                 {
                     *MqttSubscriptions[i].BoolPtr = false;
-                    MqttSubscriptions[i].MsgRcvd = true;
+                    MqttSubscriptions[i].MsgRcvd++;
                 }
                 else
                 {
@@ -259,12 +259,12 @@ void MqttCallback(char *topic, byte *payload, unsigned int length)
             case 1:
                 // Handle subscription of type INTEGER
                 *MqttSubscriptions[i].IntPtr = (int)msgString.toInt();
-                MqttSubscriptions[i].MsgRcvd = true;
+                MqttSubscriptions[i].MsgRcvd++;
                 break;
             case 2:
                 // Handle subscriptions of type FLOAT
                 *MqttSubscriptions[i].FloatPtr = msgString.toFloat();
-                MqttSubscriptions[i].MsgRcvd = true;
+                MqttSubscriptions[i].MsgRcvd++;
                 break;
             }
         }
