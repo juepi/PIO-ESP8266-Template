@@ -75,6 +75,8 @@ extern const int SubscribedTopicCnt; // Number of elements in MqttSubscriptions 
 extern MqttSubCfg MqttSubscriptions[];
 
 // Topic where VCC will be published
+#ifdef READVCC
 #define vcc_topic TOPTREE "Vbat"
+#endif
 
 #endif // MQTT_OTA_CONFIG_H

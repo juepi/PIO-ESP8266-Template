@@ -30,7 +30,7 @@ This is a helper flag topic required by the ESP.
 The ESP will publish OTA status strings here. No need to pre-create this topic, sketch does not subscribe to it (only publish).
 
 * `topic/tree/Vcc` - default Message: none  
-The sketch will publish the voltage measured on the 3.3V supply here. Note that the accuracy is quite low, but it is good enough to detect if the battery is running low when you supply the ESP in example by a LiFePo4 accumulator directly on the 3.3V pin.  
+The sketch will publish the voltage measured on the 3.3V supply here if enabled in `platformio.ini`. Note that the accuracy is quite low, but it is good enough to detect if the battery is running low when you supply the ESP in example by a LiFePo4 accumulator directly on the 3.3V pin.  
 If you want to improve accuracy, measure the actual voltage with a multimeter and adopt the `VCCCORRDIV` in the `hardware-setup.h` file.  
 Note that we do not subscribe to this topic, we only publish to it.
 

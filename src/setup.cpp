@@ -18,13 +18,15 @@ bool SentUpdateRequested = false;
 bool OtaInProgress = false;
 bool OtaIPsetBySketch = false;
 bool SentOtaIPtrue = false;
+#ifdef READVCC
 float VCC = 3.333;
-unsigned int SubscribedTopics = 0;
-unsigned int ReceivedTopics = 0;
+#endif
 
 // Set ADC mode to read VCC (Attn: Pin A0 must be floating!)
 // ==========================================================
+#ifdef READVCC
 ADC_MODE(ADC_VCC);
+#endif
 
 // Setup WiFi instance
 WiFiClient WiFiClt;
