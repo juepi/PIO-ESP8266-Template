@@ -87,11 +87,8 @@ If you run Windows, make sure that your local firewall (where you run VSC) allow
 ### Adding your own code to the template
 To add your own functionality to the template, you will need to adopt the following files:  
 
-* `include/mqtt-ota-config.h`  
-Update the `TOPTREE` to your needs.  
-
 * `include/user-config.h`  
-Define/declare your topics along with required global vars and libs here.  
+Define/declare your topics along with required global vars and libs here. Update the MQTT `TOPTREE` to your needs. The `TOPTREE` will be prepended to all of your MQTT topics.  
 
 * `src/user_setup_loop.cpp`  
 Add your desired functionality to the `user_loop` and `user_setup` functions.  
