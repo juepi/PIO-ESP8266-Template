@@ -19,5 +19,6 @@ extern bool OTAUpdateHandler();
 
 // Declare common global vars
 extern bool JustBooted;
+extern uint32_t UptimeSeconds;
 
 #endif // COMMON_FUNCTIONS_H

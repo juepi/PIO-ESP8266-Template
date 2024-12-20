@@ -35,6 +35,15 @@ void loop()
 #ifdef READVCC
   static float VCC = 0;
 #endif
+  // Uptime calculation
+  static unsigned long oldMillis = 0;
+
+  // Handle Uptime counter
+  if ((millis() - oldMillis) >= 1000)
+  {
+    oldMillis = millis();
+    UptimeSeconds++;
+  }
 
   // Check connection to MQTT broker, subscribe and update topics
   MqttUpdater();

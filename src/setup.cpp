@@ -5,7 +5,8 @@
 #include "setup.h"
 
 // Define generic global vars
-bool JustBooted = true; // Helper to let you know you're running the first iteration of the main loop()
+bool JustBooted = true;     // Helper to let you know you're running the first iteration of the main loop()
+uint32_t UptimeSeconds = 0; // Uptime counter
 
 // Define WiFi Variables
 const char *ssid = WIFI_SSID;
@@ -151,7 +152,7 @@ void setup()
 
   // Setup user specific stuff
   user_setup();
-  
+
 #ifdef ONBOARD_LED
   // Signal setup finished
   ToggleLed(LED, 200, 6);

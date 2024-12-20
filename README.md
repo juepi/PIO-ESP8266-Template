@@ -145,3 +145,4 @@ ATTN: OTA flashing did not work due to an error in macro handling!
 - Minor improvement to allow re-defining MQTT topic tree in `user-config.h` to allow over-writing `mqtt-ota-config.h` when upgrading the framework
 - Reading VCC now optional (configured via define in `platformio.ini`)
 - `JustBooted` global flag available; `true` when running main loop for the first time, then set to `false`
+- Added uptime counter (global var `UptimeSeconds`)
