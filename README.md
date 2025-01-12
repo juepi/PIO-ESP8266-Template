@@ -149,3 +149,4 @@ ATTN: OTA flashing did not work due to an error in macro handling!
 
 ## Release v1.1.2
 - Added bugfix for possible endless loop if connection to broker fails while subscribing to MQTT topics
+- Added config define to set QoS for MQTT subscriptions (see `SUB_QOS` in `platformio.ini`)

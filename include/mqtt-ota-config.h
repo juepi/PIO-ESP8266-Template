@@ -21,6 +21,11 @@
 // Message buffer for incoming Data from MQTT subscriptions
 extern char message_buff[20];
 
+// Default QoS for MQTT subscriptions (see platformio.ini)
+#ifndef SUB_QOS
+#define SUB_QOS 0
+#endif
+
 // MQTT Topic Tree prepended to all topics
 // ATTN: Must end with "/"!
 // alternatively defined in user-config.h

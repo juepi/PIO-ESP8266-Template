@@ -47,7 +47,7 @@ bool MqttConnectToBroker()
                     }
                     if (!MqttSubscriptions[i].Subscribed)
                     {
-                        if (mqttClt.subscribe(MqttSubscriptions[i].Topic))
+                        if (mqttClt.subscribe(MqttSubscriptions[i].Topic,SUB_QOS))
                         {
                             MqttSubscriptions[i].Subscribed = true;
                             SubscribedTopics++;
