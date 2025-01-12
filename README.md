@@ -146,3 +146,6 @@ ATTN: OTA flashing did not work due to an error in macro handling!
 - Reading VCC now optional (configured via define in `platformio.ini`)
 - `JustBooted` global flag available; `true` when running main loop for the first time, then set to `false`
 - Added uptime counter (global var `UptimeSeconds`)
+
+## Release v1.1.2
+- Added bugfix for possible endless loop if connection to broker fails while subscribing to MQTT topics
