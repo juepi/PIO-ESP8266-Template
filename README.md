@@ -127,8 +127,8 @@ ATTN: OTA flashing did not work due to an error in macro handling!
 - Major code cleanup
 
 ## Release 1.0.3
-- Moved user specific stuff into dedicated files / functions (`user_setup` and `user_loop`)
-- Added `MqttDelay` function which handles MQTT connection/subscriptions while delaying
+- Moved user specific stuff into dedicated files and functions (`user_setup` and `user_loop`)
+- Added `MqttDelay` function which handles MQTT updates while delaying
 - README update on `ClientName` limitation
 
 ## Release v1.1.0
@@ -150,3 +150,8 @@ ATTN: OTA flashing did not work due to an error in macro handling!
 ## Release v1.1.2
 - Added bugfix for possible endless loop if connection to broker fails while subscribing to MQTT topics
 - Added config define to set QoS for MQTT subscriptions (see `SUB_QOS` in `platformio.ini`)
+
+## Release v1.1.3
+- Set DeepSleep duration via `platformio.ini` instead of `generic-config.h`
+- Fixed another possible endless loop while waiting for subscribed topic messages at firmware boot or reconnection to broker
+- Updated `.gitignore`

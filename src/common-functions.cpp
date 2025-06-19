@@ -47,7 +47,7 @@ bool MqttConnectToBroker()
                     }
                     if (!MqttSubscriptions[i].Subscribed)
                     {
-                        if (mqttClt.subscribe(MqttSubscriptions[i].Topic,SUB_QOS))
+                        if (mqttClt.subscribe(MqttSubscriptions[i].Topic, SUB_QOS))
                         {
                             MqttSubscriptions[i].Subscribed = true;
                             SubscribedTopics++;
@@ -90,11 +90,11 @@ void MqttUpdater()
         if (MqttConnectToBroker())
         {
             // New connection to broker, fetch topics
-            // ATTN: will run endlessly if subscribed topics
-            // does not have retained messages and no one posts a message
-            DEBUG_PRINT("Waiting for messages..");
+            // ATTN: only try for MAX_TOP_RCV_ATTEMPTS then end (reboot or DEEP_SLEEP)
+            DEBUG_PRINT("Waiting for messages from subscribed topics..");
+            int TopicRcvAttempts = 0;
             bool MissingTopics = true;
-            while (MissingTopics)
+            while (TopicRcvAttempts < MAX_TOP_RCV_ATTEMPTS)
             {
                 MissingTopics = false;
                 for (int i = 0; i < SubscribedTopicCnt; i++)
@@ -102,18 +102,38 @@ void MqttUpdater()
                     if (MqttSubscriptions[i].MsgRcvd == 0)
                     {
                         MissingTopics = true;
+                        break;
                     }
                 }
                 if (MissingTopics)
                 {
                     DEBUG_PRINT(".:T!:.");
-                    mqttClt.loop();
+                    TopicRcvAttempts++;
+                    if (!mqttClt.loop())
+                    {
+                        DEBUG_PRINTLN("  Lost connection to broker while waiting for topics, reconnecting.");
+                        MqttConnectToBroker();
+                    }
 #ifdef ONBOARD_LED
                     ToggleLed(LED, 50, 2);
 #else
                     delay(100);
 #endif
                 }
+                else
+                {
+                    DEBUG_PRINTLN("");
+                    DEBUG_PRINTLN("Messages for all subscribed topics received.");
+                    break;
+                }
+            }
+            if (MissingTopics)
+            {
+#ifdef DEEP_SLEEP
+                ESP.deepSleep(DEEP_SLEEP * 60000000);
+#else
+                ESP.restart();
+#endif
             }
             DEBUG_PRINTLN("");
             DEBUG_PRINTLN("Messages for all subscribed topics received.");
@@ -122,19 +142,19 @@ void MqttUpdater()
         {
             DEBUG_PRINTLN("Unable to connect to MQTT broker.");
 #ifdef ONBOARD_LED
-            ToggleLed(LED, 100, 40);
+            ToggleLed(LED, 100, 4);
 #endif
 #ifdef DEEP_SLEEP
-            ESP.deepSleep(DS_DURATION_MIN * 60000000);
-            delay(3000);
+            ESP.deepSleep(DEEP_SLEEP * 60000000);
 #else
-            ESP.reset();
+            ESP.restart();
 #endif
         }
     }
     else
     {
         mqttClt.loop();
+        yield();
     }
 }
 

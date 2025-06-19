@@ -10,7 +10,7 @@
 // Firmware Information
 #define FIRMWARE_NAME "PIO ESP8266 Template"
 #define FIRMWARE_VERSION "1.0.0"
-#define TEMPLATE_VERSION "1.1.2"
+#define TEMPLATE_VERSION "1.1.3"
 
 // Serial Output configuration
 //
@@ -22,9 +22,5 @@
 #define DEBUG_PRINT(...)
 #define DEBUG_PRINTLN(...)
 #endif
-
-// ESP DeepSleep Configuration
-// DeepSleep duration in Minutes (max. 60)
-#define DS_DURATION_MIN 2
 
 #endif // GENERIC_CONFIG_H

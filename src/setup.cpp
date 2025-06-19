@@ -62,7 +62,7 @@ void wifi_setup()
       ToggleLed(LED, 1000, 4);
 #endif
 #ifdef DEEP_SLEEP
-      ESP.deepSleep(DS_DURATION_MIN * 60000000);
+      ESP.deepSleep(DEEP_SLEEP * 60000000);
       delay(3000);
 #else
       ESP.reset();

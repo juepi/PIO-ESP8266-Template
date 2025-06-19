@@ -80,9 +80,9 @@ void loop()
 
 #ifdef DEEP_SLEEP
   // disconnect WiFi and go to sleep
-  DEBUG_PRINTLN("Good night for " + String(DS_DURATION_MIN) + " minutes.");
+  DEBUG_PRINTLN("Good night for " + String(DEEP_SLEEP) + " minutes.");
   WiFi.disconnect();
-  ESP.deepSleep(DS_DURATION_MIN * 60000000);
+  ESP.deepSleep(DEEP_SLEEP * 60000000);
   // ATTN: Sketch continues to run for a short time after initiating DeepSleep, so pause here
   delay(5000);
 #else

@@ -18,6 +18,9 @@
 #define MQTT_CLTNAME TEXTIFY(CLTNAME)
 // Maximum connection attempts to MQTT broker before going to sleep
 #define MAXCONNATTEMPTS 3
+// Maximum retry attempts to receive messages for all subscribed topics; ESP will reset or DEEP_SLEEP if defined
+// default setting of 300 should try for ~30sec to fetch messages for all subscribed topics
+#define MAX_TOP_RCV_ATTEMPTS 300
 // Message buffer for incoming Data from MQTT subscriptions
 extern char message_buff[20];
 
